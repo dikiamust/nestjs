@@ -23,9 +23,10 @@ import entities from './entities';
         database: configService.get('DB_NAME'),
         entities: entities,
         synchronize: true,
-      }),
+      }),   
       inject: [ConfigService]
     }),
+    TypeOrmModule.forFeature(entities),
     ProductModule, 
     OrderModule,
     UserModule,
