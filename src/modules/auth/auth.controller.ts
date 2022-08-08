@@ -1,13 +1,11 @@
-import { Body, Controller, Post, ForbiddenException } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
-    constructor(
-        private readonly authService: AuthService
-        ){}
+    constructor(private readonly authService: AuthService){}
 
     @Post('register')
     async register(@Body() registerDto: RegisterDto){
@@ -16,23 +14,20 @@ export class AuthController {
             return {
                 message: 'Register succesfully!',
                 data: user
-            }
+            };
         } catch (error) {
-            if (error.driverError) {
-                return new ForbiddenException(error.driverError.detail);
-            }
-            return error      
+            return error;     
         }
     }
 
     @Post('login')
     async login(@Body() loginDto: LoginDto){
         try {
-            const user = await this.authService.login(loginDto)
+            const user = await this.authService.login(loginDto);
             return {
                 message: 'Login succesfully!',
                 data: user
-            }
+            };
         } catch (error) {
             return error;
         }

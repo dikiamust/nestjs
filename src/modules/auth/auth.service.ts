@@ -32,6 +32,7 @@ export class AuthService {
 
             return createUser;
         } catch (error) {
+            if (error.driverError) throw new BadRequestException(error.driverError.detail);
             throw error
         }
     }
