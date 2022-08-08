@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
 import * as bcrypt from 'bcrypt';
+import {JwtService} from "@nestjs/jwt";
 import { User } from 'src/entities';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -9,7 +10,8 @@ import { RegisterDto } from './dto/register.dto';
 @Injectable()
 export class AuthService {
     constructor(
-        @InjectRepository(User) private readonly userRepository: Repository<User>
+        @InjectRepository(User) private readonly userRepository: Repository<User>,
+        private jwtService: JwtService
     ) {}
 
     async register(registerDto: RegisterDto): Promise<User> {
@@ -34,7 +36,29 @@ export class AuthService {
         }
     }
 
-    async login(loginDto: any): Promise<User> {
-        return this.userRepository.findOne({where: {email: loginDto.email}})
+    async login(loginDto: LoginDto) {
+        try {
+            const findUser =  await this.userRepository.findOne({where: {email: loginDto.email}})
+
+            if (!findUser) {
+                throw new BadRequestException('Invalid credentials');
+            }
+    
+            const comparePassword = await bcrypt.compare(loginDto.password, findUser.password)
+    
+            if (!comparePassword) {
+                throw new BadRequestException('Invalid credentials');
+            }
+    
+            const jwt = await this.jwtService.signAsync({userId: findUser.id, roleId: findUser.roleId});
+    
+            const data = { email: findUser.email, token: jwt }
+
+            return data;
+        } catch (error) {
+            throw error
+            
+        }
+      
     }
 }

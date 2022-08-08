@@ -20,26 +20,14 @@ export class AuthController {
 
     @Post('login')
     async login(@Body() loginDto: LoginDto){
-        const user = await this.authService.login({email: loginDto.email})
-
-        if (!user) {
-            throw new BadRequestException('Invalid credentials');
+        try {
+            const user = await this.authService.login(loginDto)
+            return {
+                message: 'Login succesfully!',
+                data: user
+            }
+        } catch (error) {
+            return error;
         }
-
-        const comparePassword = await bcrypt.compare(loginDto.password, user.password)
-
-        if (!comparePassword) {
-            throw new BadRequestException('Invalid credentials');
-        }
-
-        const jwt = await this.jwtService.signAsync({userId: user.id, roleId: user.roleId});
-
-        const data = { email: user.email, token: jwt }
-
-        return {
-            message: 'Login succesfully!',
-            data
-        }
-        
     }
 }
