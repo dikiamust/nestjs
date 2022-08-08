@@ -1,21 +1,28 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, ForbiddenException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
-import * as bcrypt from 'bcrypt';
-import {JwtService} from "@nestjs/jwt";
 import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
     constructor(
-        private readonly authService: AuthService,
-        private jwtService: JwtService
+        private readonly authService: AuthService
         ){}
 
     @Post('register')
     async register(@Body() registerDto: RegisterDto){
-        const user = await this.authService.register(registerDto);
-        return user;
+        try {
+            const user = await this.authService.register(registerDto);
+            return {
+                message: 'Register succesfully!',
+                data: user
+            }
+        } catch (error) {
+            if (error.driverError) {
+                return new ForbiddenException(error.driverError.detail);
+            }
+            return error      
+        }
     }
 
     @Post('login')
