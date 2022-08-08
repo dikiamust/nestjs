@@ -1,11 +1,21 @@
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
+import { ResponseFilter } from './utils/response/response.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+
   app.enableCors();
+  const logger = new Logger('Main');
+  app.useGlobalFilters(
+    new ResponseFilter(app.get(WINSTON_MODULE_NEST_PROVIDER)),
+  );
+  
   app.useGlobalPipes(new ValidationPipe())
 
   const config = new DocumentBuilder()
@@ -17,6 +27,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  await app.listen(3000);
+  const port = configService.get('PORT') | 3000;
+
+  await app.listen( port, () => {
+    logger.log(
+      `Server running on http://localhost:${port}`,
+      'NestJs',
+    );
+  });
 }
 bootstrap();

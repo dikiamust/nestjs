@@ -7,7 +7,12 @@ import { RoleModule } from './modules/role/role.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
+import { WinstonModule } from 'nest-winston';
+import { SendEmailService } from './utils/send-email/send-email.service';
+import { LoggerModule } from './utils/logger/logger.module';
 import entities from './entities';
+import { LoggerService } from './utils/logger/logger.service';
+import { ResponseModule } from './utils/response/response.module';
 
 @Module({
   imports: [
@@ -27,13 +32,21 @@ import entities from './entities';
       inject: [ConfigService]
     }),
     TypeOrmModule.forFeature(entities),
+    WinstonModule.forRootAsync({
+      inject: [LoggerService],
+      imports: [LoggerModule],
+      useFactory: (loggerService: LoggerService) =>
+        loggerService.createLogger(),
+    }),
     ProductModule, 
     OrderModule,
     UserModule,
     RoleModule,
     AuthModule,
+    LoggerModule,
+    ResponseModule,
   ],
   controllers: [AppController],
-  providers: [],
+  providers: [SendEmailService],
 })
 export class AppModule {}
