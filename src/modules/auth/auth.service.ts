@@ -23,6 +23,6 @@ export class AuthService {
     }
 
     async login(loginDto: any): Promise<User> {
-        return this.userRepository.findOne(loginDto)
+        return this.userRepository.findOne({where: {email: loginDto.email}})
     }
 }

@@ -7,9 +7,9 @@ import {
 export class LoginDto {
   @IsEmail()
   @IsNotEmpty()
-  readonly email: string;
+  email: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly password: string;
+  password: string;
 }
