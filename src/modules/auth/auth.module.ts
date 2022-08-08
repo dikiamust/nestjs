@@ -18,7 +18,7 @@ import entities from 'src/entities';
       }),
       inject: [ConfigService],
     }),
-    ],
+  ],
   providers: [AuthService],
   controllers: [AuthController]
 })

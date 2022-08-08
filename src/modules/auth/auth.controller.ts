@@ -14,14 +14,7 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerDto: RegisterDto){
-        const hashedPassword = await bcrypt.hash(registerDto.password, 12);
-        registerDto.password = hashedPassword
-        registerDto.salt = await bcrypt.genSalt();
-        registerDto.roleId = 1
-
         const user = await this.authService.register(registerDto);
-        delete user.password;
-
         return user;
     }
 
@@ -39,7 +32,7 @@ export class AuthController {
             throw new BadRequestException('Invalid credentials');
         }
 
-        const jwt = await this.jwtService.signAsync({id: user.id, roleId: user.roleId});
+        const jwt = await this.jwtService.signAsync({userId: user.id, roleId: user.roleId});
 
         const data = { email: user.email, token: jwt }
 
