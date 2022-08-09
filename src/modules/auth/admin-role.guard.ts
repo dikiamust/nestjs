@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-// import { Observable } from 'rxjs';
 import { UserRole } from '../role/enum/role.enum';
 import { UserService } from '../user/user.service';
 
