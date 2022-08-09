@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ProductModule } from './modules/product/product.module';
 import { OrderModule } from './modules/order/order.module';
-import { UserModule } from './modules/user/user.module';
 import { RoleModule } from './modules/role/role.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
+import { UserModule } from './modules/user/user.module';
 import entities from './entities';
 
 @Module({
@@ -29,9 +29,9 @@ import entities from './entities';
     TypeOrmModule.forFeature(entities),
     ProductModule, 
     OrderModule,
-    UserModule,
     RoleModule,
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [],
