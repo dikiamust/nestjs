@@ -2,11 +2,11 @@ import {
     Entity,
     Column,
     PrimaryGeneratedColumn,
-    ManyToOne,
     OneToMany,
     CreateDateColumn,
-    UpdateDateColumn,
+    UpdateDateColumn
 } from "typeorm"
+import { Role } from "./role.entity"
 
 @Entity()
 export class User {
@@ -30,16 +30,12 @@ export class User {
 
     @Column()
     roleId: number
+    // @OneToMany(() => Role, (role) => role.id)
+    // role: Role[]
 
     @CreateDateColumn({ name: 'created_at'})
     createdAt: Date;
   
     @UpdateDateColumn({ name: 'updated_at'})
     updatedAt: Date;
-
-//     @ManyToOne((type) => Category, (category) => category.children)
-//     parent: Category
-
-//     @OneToMany((type) => Category, (category) => category.parent)
-//     children: Category[]
 }

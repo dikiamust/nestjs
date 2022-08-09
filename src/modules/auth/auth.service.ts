@@ -18,7 +18,7 @@ export class AuthService {
         try {
             const hashedPassword = await bcrypt.hash(registerDto.password, 12);
             registerDto.salt = await bcrypt.genSalt();
-            registerDto.roleId = 1
+            registerDto.roleId = 1;
 
             const user = new User();
             user.name = registerDto.name;

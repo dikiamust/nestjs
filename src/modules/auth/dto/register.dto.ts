@@ -23,6 +23,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
     salt: string;
 
-    roleId: number
+    roleId: number;
   }
   
