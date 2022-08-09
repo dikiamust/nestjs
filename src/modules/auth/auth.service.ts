@@ -6,6 +6,7 @@ import {JwtService} from "@nestjs/jwt";
 import { User } from 'src/entities';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UserRole } from '../role/enum/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -17,14 +18,12 @@ export class AuthService {
     async register(registerDto: RegisterDto): Promise<User> {
         try {
             const hashedPassword = await bcrypt.hash(registerDto.password, 12);
-            registerDto.salt = await bcrypt.genSalt();
-            registerDto.roleId = 1;
+            registerDto.roleId = UserRole.ADMIN;
 
             const user = new User();
             user.name = registerDto.name;
             user.email = registerDto.email;
             user.password = hashedPassword;
-            user.salt = registerDto.salt
             user.roleId = registerDto.roleId
 
             const createUser = await this.userRepository.save(user);

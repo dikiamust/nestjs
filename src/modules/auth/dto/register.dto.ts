@@ -21,8 +21,6 @@ import { ApiProperty } from '@nestjs/swagger';
     @IsNotEmpty()
     password: string;
 
-    salt: string;
-
-    roleId: number;
+    roleId?: number;
   }
   

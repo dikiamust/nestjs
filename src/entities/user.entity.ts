@@ -22,9 +22,6 @@ export class User {
     @Column({ nullable: false })
     password: string
 
-    @Column()
-    salt: string
-
     @Column('text', { default: '' })
     photo: string
 
