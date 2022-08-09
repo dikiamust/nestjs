@@ -5,8 +5,9 @@ import { GetCurrentUserDataById } from 'src/decorators/get-userdata-by-id.decora
 import { ProductEntity } from 'src/entities/product.entity';
 import { ProductService } from './product.service';
 import { CreateProductRequest } from './request/create-user.request';
+import { AdminRoleGuard } from '../auth/admin-role.guard';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), AdminRoleGuard)
 @Controller('product')
 export class ProductController {
     constructor( private productService: ProductService){}
