@@ -10,13 +10,13 @@ export class RoleService {
         @InjectRepository(Role) private readonly roleRepository: Repository<Role>
     ){}
 
-    async create(createRoleDto: CreateRoleDto): Promise<Role>{
+    async create(createRoleDto: CreateRoleDto) {
         try {
-            const role = new Role()
-            role.name = createRoleDto.name;
-
-            const createRole = await this.roleRepository.save(role);
-            return createRole;
+            const createRole = await this.roleRepository.save(createRoleDto);
+            return {
+                message: 'Role created!',
+                data: createRole
+            }
         } catch (error) {
             if (error.driverError) throw new BadRequestException(error.driverError.detail);
             throw error;

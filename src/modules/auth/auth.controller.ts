@@ -9,28 +9,12 @@ export class AuthController {
 
     @Post('register')
     async register(@Body() registerDto: RegisterDto){
-        try {
-            const user = await this.authService.register(registerDto);
-            return {
-                message: 'Register succesfully!',
-                data: user
-            };
-        } catch (error) {
-            return error;     
-        }
+        return await this.authService.register(registerDto);
     }
 
     @HttpCode(HttpStatus.OK)
     @Post('login')
     async login(@Body() loginDto: LoginDto){
-        try {
-            const user = await this.authService.login(loginDto);
-            return {
-                message: 'Login succesfully!',
-                data: user
-            };
-        } catch (error) {
-            return error;
-        }
+        return await this.authService.login(loginDto);
     }
 }

@@ -8,11 +8,6 @@ export class RoleController {
 
     @Post('create')
     async create(@Body() createRoleDto: CreateRoleDto){
-        try {
-            const role = this.roleService.create(createRoleDto);
-            return role;
-        } catch (error) {
-            return error; 
-        }
+        return this.roleService.create(createRoleDto);
     }
 }

@@ -11,22 +11,28 @@ import { Role } from "./role.entity"
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    id: number
+    id: number;
 
     @Column({ nullable: false })
-    name: string
+    name: string;
 
     @Column({ nullable: false , unique: true })
-    email: string
+    email: string;
 
     @Column({ nullable: false })
-    password: string
+    password: string;
+
+    @Column({ nullable: false })
+    salt: string;
 
     @Column('text', { default: '' })
-    photo: string
+    photo: string;
+
+    @Column({ default: false })
+    isActive: boolean;
 
     @Column()
-    roleId: number
+    roleId: number;
     // @OneToMany(() => Role, (role) => role.id)
     // role: Role[]
 

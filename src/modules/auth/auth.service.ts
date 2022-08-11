@@ -1,6 +1,7 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
+import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import {JwtService} from "@nestjs/jwt";
 import { User } from 'src/database/entities';
@@ -12,53 +13,82 @@ import { UserRole } from '../role/enum/role.enum';
 export class AuthService {
     constructor(
         @InjectRepository(User) private readonly userRepository: Repository<User>,
-        private jwtService: JwtService
+        private config: ConfigService,
+        private jwt: JwtService,
     ) {}
 
-    async register(registerDto: RegisterDto): Promise<User> {
+    async register(dto: RegisterDto) {
+        const { name, email, password } = dto;
+        //generate salt
+        const salt = await bcrypt.genSalt();
+
+        //genarete hash password
+        const hash = await bcrypt.hash(password, salt);
+
         try {
-            const hashedPassword = await bcrypt.hash(registerDto.password, 12);
-            registerDto.roleId = UserRole.ADMIN;
+        //save to db
+        const user = await this.userRepository.save({
+            name,
+            email,
+            password: hash,
+            salt,
+            roleId: UserRole.ADMIN
+        });
+        delete user.password
 
-            const user = new User();
-            user.name = registerDto.name;
-            user.email = registerDto.email;
-            user.password = hashedPassword;
-            user.roleId = registerDto.roleId
-
-            const createUser = await this.userRepository.save(user);
-            delete createUser.password;
-
-            return createUser;
+        return {
+            message: 'Success Sign Up',
+            data: user,
+        };
+        
         } catch (error) {
-            if (error.driverError) throw new BadRequestException(error.driverError.detail);
-            throw error
+        if (error.driverError)
+            throw new BadRequestException(error.driverError.detail);
+        throw error;
         }
     }
 
-    async login(loginDto: LoginDto) {
-        try {
-            const findUser =  await this.userRepository.findOne({where: {email: loginDto.email}})
+    async login(dto: LoginDto) {
+        const { email, password } = dto;
 
-            if (!findUser) {
-                throw new BadRequestException('Invalid credentials');
-            }
-    
-            const comparePassword = await bcrypt.compare(loginDto.password, findUser.password)
-    
-            if (!comparePassword) {
-                throw new BadRequestException('Invalid credentials');
-            }
-    
-            const jwt = await this.jwtService.signAsync({userId: findUser.id, roleId: findUser.roleId});
-    
-            const data = { email: findUser.email, token: jwt }
+        const user = await this.userRepository.findOne({
+            where: {
+                email,
+            },
+        });
 
-            return data;
-        } catch (error) {
-            throw error
-            
+        if (!user) {
+            throw new ForbiddenException('Invalid credentials');
         }
-      
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            throw new ForbiddenException('Invalid credentials');
+        }
+
+        //generate jwt token
+        const token = await this.signToken(user.id, user.roleId);
+
+        return {
+            message: 'Success Sign In',
+            token,
+        };
     }
+
+    async signToken(id: number, roleId: number): Promise<string> {
+        const payload = {
+          id,
+          roleId,
+        };
+    
+        const secret = this.config.get('JWT_SECRET');
+        const token = await this.jwt.signAsync(payload, {
+          expiresIn: this.config.get('JWT_EXPIRE'),
+          secret: secret,
+        });
+    
+        return token;
+      }
+        
 }
