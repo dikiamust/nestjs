@@ -19,18 +19,15 @@ export class AuthService {
 
     async register(dto: RegisterDto) {
         const { name, email, password } = dto;
-        //generate salt
-        const salt = await bcrypt.genSalt();
 
-        //genarete hash password
-        const hash = await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt();
+        const hashPassword = await bcrypt.hash(password, salt);
 
         try {
-        //save to db
         const user = await this.userRepository.save({
             name,
             email,
-            password: hash,
+            password: hashPassword,
             salt,
             roleId: UserRole.ADMIN
         });
@@ -53,7 +50,7 @@ export class AuthService {
 
         const user = await this.userRepository.findOne({
             where: {
-                email,
+              email,
             },
         });
 
