@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {  IUserData } from 'src/modules/auth/strategy/interface/user-data.interface';
 import { GetCurrentUserDataById } from 'src/decorators/get-userdata-by-id.decorator';
-import { ProductEntity } from 'src/entities/product.entity';
+import { ProductEntity } from 'src/database/entities/product.entity';
 import { ProductService } from './product.service';
 import { CreateProductRequest } from './request/create-user.request';
 import { AdminRoleGuard } from '../auth/admin-role.guard';
