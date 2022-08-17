@@ -8,6 +8,7 @@ import { User } from 'src/database/entities';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserRole } from '../role/enum/role.enum';
+import { sendEmail } from '../../utils'
 
 @Injectable()
 export class AuthService {
@@ -32,6 +33,16 @@ export class AuthService {
             roleId: UserRole.ADMIN
         });
         delete user.password
+
+        const mailOptionsToUser = {
+            to: user.email,
+            from: this.config.get('MAIL_USER'),
+            subject: 'Thank You!',
+          };
+      
+        const data = {name: user.name}
+        const template = 'src/modules/auth/template/registration.template.html'
+        await sendEmail(template, data, mailOptionsToUser) 
 
         return {
             message: 'Success Sign Up',
