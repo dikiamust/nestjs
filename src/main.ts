@@ -4,6 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { createDocument } from './swagger/swagger';
+import { socketInit } from './utils';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -17,8 +18,10 @@ async function bootstrap() {
   const port = configService.get('PORT') | 3000;
 
   try {
-    const run =  await app.listen(port);
-    return run;
+    const server =  await app.listen(port, () => {
+      console.log(`http://localhost:${port}`);
+    });
+    socketInit(server);
   } catch (error) {
     throw error; 
   }

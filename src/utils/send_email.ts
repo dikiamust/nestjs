@@ -13,7 +13,7 @@ export const sendEmail = async (template, data, mailOptions ) => {
       secured: true, 
     };
 
-    // if you using smtp sendGrid
+    // send mail using smtp sendGrid
     const sengridSmtpConfig = {
       host: process.env.MAIL_HOST,
       debug: true,
